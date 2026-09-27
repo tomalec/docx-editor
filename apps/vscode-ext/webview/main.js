@@ -52,6 +52,15 @@ function initializeEditor(fileArrayBuffer) {
 
     debug(`File created: ${file.name}, ${file.size} bytes`);
 
+    const superdocElement = document.getElementById('superdoc');
+    const toolbarElement = document.getElementById('superdoc-toolbar');
+
+    // Re-initializing wipes #superdoc's contents below, resetting its scroll to
+    // the top. Capture the position now to re-apply it once the new editor is ready.
+    const previousScroll = superdocElement
+      ? { scrollTop: superdocElement.scrollTop, scrollLeft: superdocElement.scrollLeft }
+      : null;
+
     if (editor) {
       debug('Destroying previous editor...');
       try {
@@ -66,9 +75,6 @@ function initializeEditor(fileArrayBuffer) {
     }
 
     isInitialLoad = true;
-
-    const superdocElement = document.getElementById('superdoc');
-    const toolbarElement = document.getElementById('superdoc-toolbar');
 
     if (superdocElement) {
       superdocElement.innerHTML = '';
@@ -96,6 +102,10 @@ function initializeEditor(fileArrayBuffer) {
           debug('SuperDoc is ready');
           isInitialLoad = false;
           setupEditorListeners();
+          if (previousScroll) {
+            superdocElement.scrollTop = previousScroll.scrollTop;
+            superdocElement.scrollLeft = previousScroll.scrollLeft;
+          }
         },
         onEditorCreate: () => {
           debug('Editor created');
